@@ -28,9 +28,9 @@ export default function SurveyDetailPage() {
     if (data.grade) data.grade = String(Number(data.grade));
     if (data.class) data.class = String(Number(data.class));
 
-    const secret = process.env.NEXT_PUBLIC_CUR_SHARED_SECRET;
-    const jsonBody = JSON.stringify(data);
-    const signature = CryptoJS.HmacSHA256(jsonBody, secret).toString(CryptoJS.enc.Hex);
+  const secret = process.env.NEXT_PUBLIC_CUR_SHARED_SECRET || "";
+  const jsonBody = JSON.stringify(data);
+  const signature = CryptoJS.HmacSHA256(jsonBody, secret).toString(CryptoJS.enc.Hex);
 
     try {
       await axios.post(

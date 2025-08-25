@@ -42,7 +42,7 @@ export default function TopPage() {
       grade: Number(form.grade),
       class: Number(form.class)
     };
-    const secret = process.env.NEXT_PUBLIC_CUR_SHARED_SECRET;
+    const secret = process.env.NEXT_PUBLIC_CUR_SHARED_SECRET || "";
     const jsonBody = JSON.stringify(sendData);
     const signature = CryptoJS.HmacSHA256(jsonBody, secret).toString(CryptoJS.enc.Hex);
 
