@@ -9,18 +9,24 @@ import CryptoJS from 'crypto-js';
 const WP_BASE_URL = process.env.NEXT_PUBLIC_WP_BASE_URL;
 
 export default function SurveyDetailPage() {
+  type SurveyForm = {
+    fm_label: string;
+    fm_type: string;
+    fm_value?: string;
+  };
+
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     const formData = new FormData(e.currentTarget);
-    const data: Record<string, any> = {};
+    const data: Record<string, string> = {};
     formData.forEach((value, key) => {
-      data[key] = value;
+      data[key] = value.toString();
     });
     data.user_id = user.id;
 
     // grade, classを数値化（存在する場合のみ）
-    if (data.grade) data.grade = Number(data.grade);
-    if (data.class) data.class = Number(data.class);
+    if (data.grade) data.grade = String(Number(data.grade));
+    if (data.class) data.class = String(Number(data.class));
 
     const secret = process.env.NEXT_PUBLIC_CUR_SHARED_SECRET;
     const jsonBody = JSON.stringify(data);
@@ -38,14 +44,25 @@ export default function SurveyDetailPage() {
         }
       );
       alert('送信しました');
-    } catch (err) {
+    } catch {
       alert('送信に失敗しました');
     }
   };
   const { user, loading } = useLineUser();
   const searchParams = useSearchParams();
   const id = searchParams.get("id");
-  const [detail, setDetail] = useState<any>(null);
+  type SurveyDetail = {
+    group: { fm_title: string; fm_text: string };
+    date: string;
+    form: {
+      fm_label: string;
+      fm_type: string;
+      fm_value?: string;
+    }[];
+    post: { ID: number };
+    content?: string;
+  };
+  const [detail, setDetail] = useState<SurveyDetail | null>(null);
   const [fetching, setFetching] = useState(false);
 
   useEffect(() => {
@@ -78,7 +95,7 @@ export default function SurveyDetailPage() {
             <div>日付: {detail.date}</div>
           </div>
           {detail.form &&
-            detail.form.map((form: any, formIdx: number) => {
+            detail.form.map((form: SurveyForm, formIdx: number) => {
               const options = form.fm_value ? form.fm_value.split(",") : [];
               const formKey = `form_${formIdx}`;
               return (
@@ -107,12 +124,11 @@ export default function SurveyDetailPage() {
                           id={`${formKey}_${option.trim()}`}
                           value={option.trim()}
                         />
-                        <label className="form-check-label" htmlFor={`${formKey}_${option.trim()}`}>
+                        <label className="form-check-label" htmlFor={`${formKey}_${option.trim()}`}> 
                           {option.trim()}
                         </label>
                       </div>
                     ))}
-               
                 </div>
               );
             })}
