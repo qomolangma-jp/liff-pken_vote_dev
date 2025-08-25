@@ -10,7 +10,12 @@ const WP_BASE_URL = process.env.NEXT_PUBLIC_WP_BASE_URL;
 
 export default function SurveyHistoryPage() {
   const { user, loading } = useLineUser();
-  const [history, setHistory] = useState<any[]>([]);
+  type SurveyHistoryItem = {
+    id: number;
+    title: string;
+    date: string;
+  };
+  const [history, setHistory] = useState<SurveyHistoryItem[]>([]);
 
   useEffect(() => {
     if (!user) return;
@@ -32,7 +37,7 @@ export default function SurveyHistoryPage() {
         <div className={styles.historyEmpty}>履歴はありません。</div>
       ) : (
         <ul className={styles.historyList}>
-          {history.map((item, idx) => (
+          {history.map((item: SurveyHistoryItem, idx: number) => (
             <li key={idx} className={styles.historyItem}>
               <Link href={`/survey-detail?id=${item.id}`}>
                 {item.title}（{item.date}）
