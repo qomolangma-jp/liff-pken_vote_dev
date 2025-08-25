@@ -3,11 +3,13 @@ import axios from "axios";
 
 const WP_BASE_URL = process.env.NEXT_PUBLIC_WP_BASE_URL;
 
-  interface LineUser {
-    id: number;
-    name?: string;
-    // 必要に応じて他のプロパティを追加
-  }
+interface LineUser {
+  id: number;
+  name?: string;
+  // 必要に応じて他のプロパティを追加
+}
+
+export function useLineUser() {
   const [user, setUser] = useState<LineUser | null>(null);
   const [loading, setLoading] = useState(true);
 
