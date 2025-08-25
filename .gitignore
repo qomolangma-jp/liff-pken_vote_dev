@@ -4,6 +4,8 @@
 /node_modules
 /.pnp
 .pnp.*
+
+# Yarn
 .yarn/*
 !.yarn/patches
 !.yarn/plugins
@@ -15,23 +17,28 @@
 
 # next.js
 /.next/
-/out/
+out/
 
 # production
 /build
+/dist
+.cache/
+.turbo/
 
 # misc
 .DS_Store
+Thumbs.db
 *.pem
 
-# debug
+# debug logs
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
-.pnpm-debug.log*
+pnpm-debug.log*
 
-# env files (can opt-in for committing if needed)
+# env files (never commit real secrets)
 .env*
+!.env.example   # ← サンプル用はコミットOK
 
 # vercel
 .vercel
@@ -39,3 +46,8 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+
+# IDE / editor
+.vscode/*
+!.vscode/extensions.json
+!.vscode/settings.json
