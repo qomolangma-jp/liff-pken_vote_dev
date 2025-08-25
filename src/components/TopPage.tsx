@@ -185,8 +185,9 @@ export default function TopPage() {
   );
 }
 
+type SurveyHistoryItem = { id: number; title: string; date: string };
 function SurveyHistory({ userId }: { userId: string }) {
-  const [history, setHistory] = useState(null);
+  const [history, setHistory] = useState<SurveyHistoryItem[] | null>(null);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
