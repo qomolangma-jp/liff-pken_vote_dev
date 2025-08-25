@@ -22,7 +22,7 @@ export default function SurveyDetailPage() {
     formData.forEach((value, key) => {
       data[key] = value.toString();
     });
-    data.user_id = user.id;
+  data.user_id = user ? String(user.id) : "";
 
     // grade, classを数値化（存在する場合のみ）
     if (data.grade) data.grade = String(Number(data.grade));
