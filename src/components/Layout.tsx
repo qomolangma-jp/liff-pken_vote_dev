@@ -2,7 +2,9 @@
 import Link from "next/link";
 import styles from "./Layout.module.css";
 
-export default function Layout({ children }) {
+import { ReactNode } from "react";
+
+export default function Layout({ children }: { children: ReactNode }) {
   return (
     <div className={styles.wrapper}>
       <header className={styles.header}>
