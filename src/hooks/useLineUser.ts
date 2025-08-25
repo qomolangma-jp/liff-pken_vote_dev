@@ -7,6 +7,11 @@ const WP_BASE_URL = process.env.NEXT_PUBLIC_WP_BASE_URL;
 interface LineUser {
   id: number;
   name?: string;
+  last_name?: string;
+  first_name?: string;
+  last_kana?: string;
+  first_kana?: string;
+  email?: string;
   // 必要に応じて他のプロパティを追加
 }
 
