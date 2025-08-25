@@ -185,7 +185,7 @@ export default function TopPage() {
   );
 }
 
-function SurveyHistory({ userId }) {
+function SurveyHistory({ userId }: { userId: string }) {
   const [history, setHistory] = useState(null);
   const [loading, setLoading] = useState(true);
 
