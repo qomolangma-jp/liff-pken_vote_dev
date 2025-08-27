@@ -8,11 +8,13 @@ const nextConfig: NextConfig = {
     ignoreDuringBuilds: true,
   },
   async rewrites() {
+    const isDev = process.env.NODE_ENV === "development";
     return [
       {
         source: "/wp-api/:path*",
-        destination:
-          "http://localhost:8080/pken-dev_vote/wp-json/:path*", // ←WPのURLに合わせて
+        destination: isDev
+          ? "http://localhost:8080/pken-dev_vote/wp-json/:path*"
+          : "https://liff-pken-vote-dev.vercel.app/wp-json/:path*", // ←本番WPのURL
       },
     ];
   },
