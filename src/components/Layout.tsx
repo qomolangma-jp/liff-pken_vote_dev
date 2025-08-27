@@ -1,5 +1,6 @@
 "use client";
 import Link from "next/link";
+import Image from "next/image";
 import styles from "./Layout.module.css";
 
 import { ReactNode } from "react";
@@ -9,7 +10,7 @@ export default function Layout({ children }: { children: ReactNode }) {
     <div className={styles.wrapper}>
       <header className={styles.header}>
         <div className={styles.logoArea}>
-          <img src="/logo.png" alt="ロゴ" className={styles.logo} />
+          <Image src="/logo.png" alt="ロゴ" className={styles.logo} width={40} height={40} priority />
           <span className={styles.serviceName}>Pken Vote サービス</span>
         </div>
       </header>

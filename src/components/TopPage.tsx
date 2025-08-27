@@ -185,32 +185,4 @@ export default function TopPage() {
   );
 }
 
-type SurveyHistoryItem = { id: number; title: string; date: string };
-function SurveyHistory({ userId }: { userId: string }) {
-  const [history, setHistory] = useState<SurveyHistoryItem[] | null>(null);
-  const [loading, setLoading] = useState(true);
-
-  useEffect(() => {
-    axios.get(`${WP_BASE_URL}/wp-json/custom/v1/survey_history`, {
-      params: { user_id: userId }
-    })
-      .then(res => setHistory(res.data))
-      .catch(() => setHistory([]))
-      .finally(() => setLoading(false));
-  }, [userId]);
-
-  if (loading) return <div className={styles.historyLoading}>読み込み中...</div>;
-  if (!history || history.length === 0) return <div className={styles.historyEmpty}>履歴はありません。</div>;
-
-  return (
-    <ul className={styles.historyList}>
-      {history.map((item, idx) => (
-        <li key={idx} className={styles.historyItem}>
-          <Link href={`/survey-detail?id=${item.id}`}>
-            {item.title}（{item.date}）
-          </Link>
-        </li>
-      ))}
-    </ul>
-  );
-}
+// 不要なSurveyHistory関数の残骸を完全に削除

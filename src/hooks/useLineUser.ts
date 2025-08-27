@@ -1,9 +1,6 @@
 import { useEffect, useState } from "react";
 import axios from "axios";
 
-const WP_BASE_URL = process.env.NEXT_PUBLIC_WP_BASE_URL;
-
-
 interface LineUser {
   id: number;
   name?: string;
@@ -49,15 +46,39 @@ export function useLineUser() {
           // ローカル開発や未ログイン時の仮ID
           line_id = "Ua08801bcbe21d7c2985ed58d24006472";
         }
-        const res = await axios.post(
-          `${WP_BASE_URL}/wp-json/custom/v1/me`,
-          { line_id },
-          { headers: { "Content-Type": "application/json" } }
-        );
-        if (res.data && res.data.id) setUser(res.data);
-        else setUser(null);
-      } catch {
-        setUser(null);
+        try {
+          const res = await axios.post(
+            "/wp-api/custom/v1/me",
+            { line_id },
+            { headers: { "Content-Type": "application/json" } }
+          );
+          if (res.data && res.data.id) setUser(res.data);
+          else setUser(null);
+        } catch (error) {
+          console.error('API Error:', error);
+          // 開発時のフォールバック: モックユーザーを設定
+          if (process.env.NODE_ENV === 'development') {
+            setUser({
+              id: 1,
+              name: 'テストユーザー',
+              email: 'test@example.com'
+            });
+          } else {
+            setUser(null);
+          }
+        }
+      } catch (fetchError) {
+        console.error('useLineUser Error:', fetchError);
+        // 開発時のフォールバック
+        if (process.env.NODE_ENV === 'development') {
+          setUser({
+            id: 1,
+            name: 'テストユーザー',
+            email: 'test@example.com'
+          });
+        } else {
+          setUser(null);
+        }
       } finally {
         setLoading(false);
       }
