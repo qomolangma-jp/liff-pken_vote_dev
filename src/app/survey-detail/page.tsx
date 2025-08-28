@@ -12,12 +12,24 @@ type SurveyForm = {
   fm_value?: string;
 };
 
+type SurveyReply = {
+  fm_re_id: string;
+  user_id: string;
+  post_id: string;
+  answer: string;
+  str: string;
+  history: any;
+  created: string;
+  updated: string | null;
+};
+
 type SurveyDetail = {
   group?: { fm_title: string; fm_text: string } | null;
   date?: string;
   form?: SurveyForm[];
   post?: { ID: number };
   content?: string;
+  my_reply?: SurveyReply;
 };
 
 function SurveyDetailContent() {
@@ -28,6 +40,9 @@ function SurveyDetailContent() {
   const [detail, setDetail] = useState<SurveyDetail | null>(null);
   const [fetching, setFetching] = useState(false);
 
+  // 前回回答内容を展開
+  const prevAnswers: Record<string, string> = detail?.my_reply?.str ? JSON.parse(detail.my_reply.str) : {};
+
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     const formData = new FormData(e.currentTarget);
@@ -36,6 +51,11 @@ function SurveyDetailContent() {
       data[key] = value.toString();
     });
     data.user_id = user ? String(user.id) : "";
+
+    // 既存回答があればfm_re_idを付与（更新扱い）
+    if (detail?.my_reply?.fm_re_id) {
+      data.fm_re_id = detail.my_reply.fm_re_id;
+    }
 
     // 数値フィールドの変換
     if (data.grade) data.grade = String(Number(data.grade));
@@ -47,12 +67,16 @@ function SurveyDetailContent() {
     const signature = CryptoJS.HmacSHA256(jsonBody, secret).toString(CryptoJS.enc.Hex);
 
     try {
-      const response = await axios.post("/wp-api/custom/v1/survey_reply", data, {
-        headers: {
-          'X-Signature': signature,
-          'Content-Type': 'application/x-www-form-urlencoded'
+      const response = await axios.post(
+        `/wp-api/custom/v1/survey_reply`,
+        data,
+        {
+          headers: {
+            "Content-Type": "application/json",
+            "X-Signature": signature,
+          },
         }
-      });
+      );      
       console.log('送信成功:', response.data);
       alert('送信しました');
     } catch (error) {
@@ -83,38 +107,7 @@ function SurveyDetailContent() {
           console.error('Response data:', error.response?.data);
           console.error('Response status:', error.response?.status);
         }
-        
-        // 開発時のフォールバック: テスト用ダミーデータ
-        if (process.env.NODE_ENV === 'development') {
-          const dummyData: SurveyDetail = {
-            group: {
-              fm_title: 'テスト アンケート',
-              fm_text: 'これはテスト用のアンケートです。'
-            },
-            date: '2025-08-28',
-            form: [
-              {
-                fm_label: 'お名前',
-                fm_type: 'text',
-                fm_value: ''
-              },
-              {
-                fm_label: '満足度',
-                fm_type: 'radio',
-                fm_value: '非常に満足,満足,普通,不満,非常に不満'
-              },
-              {
-                fm_label: 'ご意見',
-                fm_type: 'textarea',
-                fm_value: ''
-              }
-            ],
-            post: { ID: 1 }
-          };
-          setDetail(dummyData);
-        } else {
-          setDetail(null);
-        }
+        setDetail(null);
       })
       .finally(() => setFetching(false));
   }, [user, id]);
@@ -150,7 +143,7 @@ function SurveyDetailContent() {
                       className="form-control"
                       id={formKey}
                       name={formKey}
-                      defaultValue=""
+                      defaultValue={prevAnswers[formKey] || ""}
                     />
                   )}
                   {form.fm_type === "textarea" && (
@@ -159,6 +152,7 @@ function SurveyDetailContent() {
                       id={formKey} 
                       name={formKey}
                       rows={4}
+                      defaultValue={prevAnswers[formKey] || ""}
                     ></textarea>
                   )}
                   {form.fm_type === "radio" &&
@@ -170,6 +164,7 @@ function SurveyDetailContent() {
                           name={formKey}
                           id={`${formKey}_${option.trim()}`}
                           value={option.trim()}
+                          defaultChecked={prevAnswers[formKey] === option.trim()}
                         />
                         <label 
                           className="form-check-label" 
@@ -188,6 +183,11 @@ function SurveyDetailContent() {
             id="post_id"
             value={detail.post?.ID || 0}
           />
+          {detail.my_reply?.created && (
+            <div style={{ margin: '1em 0', color: '#666', fontSize: '0.95em' }}>
+              前回の回答日時: {detail.my_reply.created}
+            </div>
+          )}
           <button type="submit" className={styles.submitButton}>
             送信
           </button>

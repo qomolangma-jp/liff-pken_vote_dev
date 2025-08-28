@@ -5,9 +5,6 @@ import Link from "next/link";
 import styles from "../../components/TopPage.module.css";
 import { useLineUser } from "@/hooks/useLineUser";
 
-const WP_BASE_URL = process.env.NEXT_PUBLIC_WP_BASE_URL;
-
-
 export default function SurveyHistoryPage() {
   const { user, loading } = useLineUser();
   type SurveyHistoryItem = {
@@ -20,7 +17,7 @@ export default function SurveyHistoryPage() {
   useEffect(() => {
     if (!user) return;
     axios
-      .get(`${WP_BASE_URL}/wp-json/custom/v1/survey_history`, {
+      .get(`/wp-api/custom/v1/survey_history`, {
         params: { user_id: user.id },
       })
       .then((res) => setHistory(res.data))
