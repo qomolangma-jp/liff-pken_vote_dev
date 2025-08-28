@@ -14,7 +14,7 @@ const nextConfig: NextConfig = {
         source: "/wp-api/:path*",
         destination: isDev
           ? "http://localhost:8080/pken-dev_vote/wp-json/:path*"
-          : "https://liff-pken-vote-dev.vercel.app/wp-json/:path*", // ←本番WPのURL
+          : "https://by.p-kmt.com/wp-json/:path*", // 本番WPのURLに修正
       },
     ];
   },
