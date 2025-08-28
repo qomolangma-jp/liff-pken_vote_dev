@@ -132,9 +132,6 @@ export default function TopPage() {
   return (
     <main className={styles.main}>
       <form className={styles.formCard} onSubmit={handleSubmit}>
-        <div className={styles.apiInfo}>
-          API: {WP_BASE_URL}
-        </div>
         <h2 className={styles.formTitle}>ユーザー登録</h2>
         <div className={styles.formGroup}>
           <label className={styles.formLabel}>学年</label>
