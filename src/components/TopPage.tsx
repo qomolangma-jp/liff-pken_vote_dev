@@ -46,6 +46,14 @@ export default function TopPage() {
     const jsonBody = JSON.stringify(sendData);
     const signature = CryptoJS.HmacSHA256(jsonBody, secret).toString(CryptoJS.enc.Hex);
 
+    console.log("生成された署名:", signature);
+    console.log("NEXT_PUBLIC_CUR_SHARED_SECRET:", process.env.NEXT_PUBLIC_CUR_SHARED_SECRET);
+    console.log("APIリクエストヘッダー", {
+      "X-User-Id": userId,
+      "X-Timestamp": timestamp,
+      "X-Signature": signature,
+    });
+
     await axios.post(
       '/wp-api/custom/v1/register',
       sendData,
