@@ -18,7 +18,7 @@ type SurveyReply = {
   post_id: string;
   answer: string;
   str: string;
-  history: any;
+  history: Record<string, unknown> | null;
   created: string;
   updated: string | null;
 };
