@@ -33,9 +33,10 @@ export function useLineUser() {
   useEffect(() => {
     const fetchUser = async () => {
       setLoading(true);
+      let line_id = "";
+      
       try {
         // liffオブジェクトからline_idを取得（LIFF SDKがwindow.liffとしてグローバルに存在する前提）
-        let line_id = "";
         if (
           typeof window !== "undefined" &&
           isLiffAvailable(window) &&

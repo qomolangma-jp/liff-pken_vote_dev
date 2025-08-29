@@ -39,7 +39,7 @@ export default function TopPage() {
       ...form,
       grade: Number(form.grade),
       class: Number(form.class),
-      line_id: user?.lineId || ''
+      line_id: user?.line_id || ''
     };
 
     const rawBody = JSON.stringify(sendData); // bodyはAPIに送るオブジェクト
@@ -137,9 +137,9 @@ export default function TopPage() {
   return (
     <main className={styles.main}>
       {/* line_idの表示 */}
-      {user?.lineId && (
+      {user && user.line_id && (
         <div style={{ margin: '1em', color: '#1976d2', fontWeight: 'bold' }}>
-          LINE ID: {user.lineId}
+          LINE ID: {user.line_id}
         </div>
       )}
       <form className={styles.formCard} onSubmit={handleSubmit}>
