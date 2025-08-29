@@ -6,8 +6,6 @@ import styles from './TopPage.module.css';
 import Link from 'next/link';
 import { useLineUser } from "@/hooks/useLineUser";
 
-const WP_BASE_URL = process.env.NEXT_PUBLIC_WP_BASE_URL;
-
 const grades = [
   { label: '1年', value: 1 },
   { label: '2年', value: 2 },
@@ -40,7 +38,8 @@ export default function TopPage() {
     const sendData = {
       ...form,
       grade: Number(form.grade),
-      class: Number(form.class)
+      class: Number(form.class),
+      line_id: user?.lineId || ''
     };
 
     const rawBody = JSON.stringify(sendData); // bodyはAPIに送るオブジェクト
@@ -137,6 +136,12 @@ export default function TopPage() {
   // 未ログイン時は登録フォーム
   return (
     <main className={styles.main}>
+      {/* line_idの表示 */}
+      {user?.lineId && (
+        <div style={{ margin: '1em', color: '#1976d2', fontWeight: 'bold' }}>
+          LINE ID: {user.lineId}
+        </div>
+      )}
       <form className={styles.formCard} onSubmit={handleSubmit}>
         <h2 className={styles.formTitle}>ユーザー登録</h2>
         <div className={styles.formGroup}>
