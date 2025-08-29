@@ -9,6 +9,7 @@ interface LineUser {
   last_kana?: string;
   first_kana?: string;
   email?: string;
+  line_id: string;
   // 必要に応じて他のプロパティを追加
 }
 
@@ -52,7 +53,7 @@ export function useLineUser() {
             { line_id },
             { headers: { "Content-Type": "application/json" } }
           );
-          if (res.data && res.data.id) setUser(res.data);
+          if (res.data && res.data.id) setUser({ ...res.data, line_id });
           else setUser(null);
         } catch (error) {
           console.error('API Error:', error);
@@ -61,7 +62,8 @@ export function useLineUser() {
             setUser({
               id: 1,
               name: 'テストユーザー',
-              email: 'test@example.com'
+              email: 'test@example.com',
+              line_id: line_id
             });
           } else {
             setUser(null);
@@ -74,7 +76,8 @@ export function useLineUser() {
           setUser({
             id: 1,
             name: 'テストユーザー',
-            email: 'test@example.com'
+            email: 'test@example.com',
+            line_id: line_id
           });
         } else {
           setUser(null);
