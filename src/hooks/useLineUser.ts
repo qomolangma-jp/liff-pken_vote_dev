@@ -34,7 +34,7 @@ export function useLineUser() {
     const fetchUser = async () => {
       setLoading(true);
       let line_id = "";
-      
+
       try {
         // liffオブジェクトからline_idを取得（LIFF SDKがwindow.liffとしてグローバルに存在する前提）
         if (
@@ -46,7 +46,7 @@ export function useLineUser() {
           line_id = profile.userId;
         } else {
           // ローカル開発や未ログイン時の仮ID
-          line_id = "Ua08801bcbe21d7c2985ed58d24006472";
+          line_id = "Ua08801bcbe21d7c2985ed58d24006472XXX";
         }
         try {
           const res = await axios.post(
@@ -54,35 +54,20 @@ export function useLineUser() {
             { line_id },
             { headers: { "Content-Type": "application/json" } }
           );
-          if (res.data && res.data.id) setUser({ ...res.data, line_id });
-          else setUser(null);
+          if (res.data && res.data.id) {
+            setUser({ ...res.data, line_id });
+          } else {
+            // line_idだけは必ずセット
+            console.log('setline_id:', line_id);
+            setUser({ id: 0, line_id });
+          }
         } catch (error) {
           console.error('API Error:', error);
-          // 開発時のフォールバック: モックユーザーを設定
-          if (process.env.NODE_ENV === 'development') {
-            setUser({
-              id: 1,
-              name: 'テストユーザー',
-              email: 'test@example.com',
-              line_id: line_id
-            });
-          } else {
-            setUser(null);
-          }
+          setUser({ id: 0, line_id });
         }
       } catch (fetchError) {
         console.error('useLineUser Error:', fetchError);
-        // 開発時のフォールバック
-        if (process.env.NODE_ENV === 'development') {
-          setUser({
-            id: 1,
-            name: 'テストユーザー',
-            email: 'test@example.com',
-            line_id: line_id
-          });
-        } else {
-          setUser(null);
-        }
+        setUser(null);
       } finally {
         setLoading(false);
       }

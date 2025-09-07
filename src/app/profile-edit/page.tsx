@@ -1,7 +1,7 @@
 "use client";
 import React, { useEffect, useState } from "react";
 // import axios from "axios"; // 未使用のため削除
-import styles from "../../components/TopPage.module.css";
+import styles from "@/components/TopPage.module.css";
 import { useLineUser } from "@/hooks/useLineUser";
 
 // const WP_BASE_URL = process.env.NEXT_PUBLIC_WP_BASE_URL; // 未使用のため削除
@@ -40,7 +40,8 @@ export default function ProfileEditPage() {
     setSaved(true);
   };
 
-  if (loading) return <main className={styles.main}>読み込み中...</main>;
+  if (loading) return <main className={styles.main}><div className={styles.loader}></div></main>;
+  if (!user) return <main className={styles.main}>ログイン情報がありません。</main>;
 
   return (
     <main className={styles.main}>

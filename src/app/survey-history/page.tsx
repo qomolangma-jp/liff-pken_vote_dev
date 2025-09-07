@@ -2,7 +2,7 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
 import Link from "next/link";
-import styles from "../../components/TopPage.module.css";
+import styles from "@/components/TopPage.module.css";
 import { useLineUser } from "@/hooks/useLineUser";
 
 export default function SurveyHistoryPage() {
@@ -13,22 +13,26 @@ export default function SurveyHistoryPage() {
     date: string;
   };
   const [history, setHistory] = useState<SurveyHistoryItem[]>([]);
+  const [loadingHistory, setLoadingHistory] = useState(true);
 
   useEffect(() => {
     if (!user) return;
+    setLoadingHistory(true);
     axios
       .get(`/wp-api/custom/v1/survey_history`, {
         params: { user_id: user.id },
       })
       .then((res) => setHistory(res.data))
-      .catch(() => setHistory([]));
+      .catch(() => setHistory([]))
+      .finally(() => setLoadingHistory(false));
   }, [user]);
 
+  if (loading || loadingHistory) return <main className={styles.main}><div className={styles.loader}></div></main>;
   if (!user) return <main className={styles.main}>ログイン情報がありません。</main>;
-  if (loading) return <main className={styles.main}>読み込み中...</main>;
 
   return (
     <main className={styles.main}>
+    <div className={styles.container}>
       <h2 className={styles.sectionTitle}>アンケート履歴</h2>
       {history.length === 0 ? (
         <div className={styles.historyEmpty}>履歴はありません。</div>
@@ -43,6 +47,7 @@ export default function SurveyHistoryPage() {
           ))}
         </ul>        
       )}
+    </div>
     </main>
   );
 }

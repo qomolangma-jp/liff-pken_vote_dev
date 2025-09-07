@@ -15,6 +15,7 @@ const classes = Array.from({ length: 9 }, (_, i) => ({ label: `${i + 1}組`, val
 
 export default function TopPage() {
   const { user, loading } = useLineUser();
+  console.log('User:', user);
 
   const [form, setForm] = useState({
     grade: '',
@@ -26,6 +27,8 @@ export default function TopPage() {
     email: ''
   });
   const [submitted, setSubmitted] = useState(false);
+  const [errorMsg, setErrorMsg] = useState<string | null>(null);
+  const [loadingSubmit, setLoadingSubmit] = useState(false);
 
   // ...user, loadingはuseLineUserから取得するため、fetchUserやsetUser/setLoadingのローカル管理は不要...
 
@@ -35,48 +38,61 @@ export default function TopPage() {
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    const sendData = {
-      ...form,
-      grade: Number(form.grade),
-      class: Number(form.class),
-      line_id: user?.line_id || ''
-    };
+    setLoadingSubmit(true);
+    setErrorMsg(null);
+    try {
+      const sendData = {
+        ...form,
+        grade: Number(form.grade),
+        class: Number(form.class),
+        line_id: user?.line_id || ''
+      };
 
-    const rawBody = JSON.stringify(sendData); // bodyはAPIに送るオブジェクト
-    const signature = CryptoJS.HmacSHA256(
-      rawBody,
-      process.env.NEXT_PUBLIC_CUR_SHARED_SECRET || ""
-    ).toString();    
+      const rawBody = JSON.stringify(sendData); // bodyはAPIに送るオブジェクト
+      const signature = CryptoJS.HmacSHA256(
+        rawBody,
+        process.env.NEXT_PUBLIC_CUR_SHARED_SECRET || ""
+      ).toString();    
 
-    console.log("生成された署名:", signature);
-    console.log("NEXT_PUBLIC_CUR_SHARED_SECRET:", process.env.NEXT_PUBLIC_CUR_SHARED_SECRET);
+      console.log("生成された署名:", signature);
+      console.log("NEXT_PUBLIC_CUR_SHARED_SECRET:", process.env.NEXT_PUBLIC_CUR_SHARED_SECRET);
 
-    await axios.post(
-      '/wp-api/custom/v1/register',
-      sendData,
-      {
-        headers: {
-          'Content-Type': 'application/json',
-          'X-Signature': signature
+      await axios.post(
+        '/wp-api/custom/v1/register',
+        sendData,
+        {
+          headers: {
+            'Content-Type': 'application/json',
+            'X-Signature': signature
+          }
         }
+      );
+      setSubmitted(true);
+    } catch (err: any) {
+      if (err.response && err.response.status === 409 && err.response.data?.error) {
+        setErrorMsg(err.response.data.error);
+      } else {
+        setErrorMsg('登録に失敗しました。');
       }
-    );
-    setSubmitted(true);
+    } finally {
+      setLoadingSubmit(false);
+    }
   };
 
-  if (loading) {
+  const [mounted, setMounted] = useState(false);
+  useEffect(() => { setMounted(true); }, []);
+  if (loading && mounted) {
     return (
       <main className={styles.loadingMain}>
         <div className={styles.loadingCard}>
-          <div className={styles.loader} />
-          読み込み中...
+          <div className={styles.loader}></div>
         </div>
       </main>
     );
   }
 
   // ログイン済みならダッシュボード表示
-  if (user) {
+  if (user && user.id !== 0) {
     return (
       <main>
         <header className={styles.header}>
@@ -136,14 +152,15 @@ export default function TopPage() {
   // 未ログイン時は登録フォーム
   return (
     <main className={styles.main}>
+      <form className={styles.formCard} onSubmit={handleSubmit}>
+        <h2 className={styles.formTitle}>ユーザー登録</h2>
       {/* line_idの表示 */}
       {user && user.line_id && (
-        <div style={{ margin: '1em', color: '#1976d2', fontWeight: 'bold' }}>
+        <div style={{ color: '#1976d2', fontWeight: 'bold' }}>
           LINE ID: {user.line_id}
         </div>
       )}
-      <form className={styles.formCard} onSubmit={handleSubmit}>
-        <h2 className={styles.formTitle}>ユーザー登録</h2>
+
         <div className={styles.formGroup}>
           <label className={styles.formLabel}>学年</label>
           <select name="grade" value={form.grade} onChange={handleChange} required className={styles.select}>
@@ -186,8 +203,14 @@ export default function TopPage() {
             autoComplete="email"
           />
         </div>
-        <button type="submit" className={styles.button}>登録</button>
-        <div className={styles.loader}></div>
+        {errorMsg && (
+          <div style={{ color: 'red', marginBottom: '1em', fontWeight: 'bold' }}>{errorMsg}</div>
+        )}
+
+  {!loadingSubmit && (
+    <button type="submit" className={styles.button}>登録</button>
+  )}
+  {loadingSubmit && <div className={styles.loader}></div>}
       </form>
     </main>
   );

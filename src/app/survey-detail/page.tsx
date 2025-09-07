@@ -1,7 +1,7 @@
 "use client";
 import React, { useEffect, useState, Suspense } from "react";
 import axios from "axios";
-import styles from "../../components/TopPage.module.css";
+import styles from "@/components/TopPage.module.css";
 import { useLineUser } from "@/hooks/useLineUser";
 import { useSearchParams } from "next/navigation";
 import CryptoJS from "crypto-js";
@@ -113,7 +113,10 @@ function SurveyDetailContent() {
   }, [user, id]);
 
   if (loading || fetching) {
-    return <main className={styles.main}>読み込み中...</main>;
+    return <main className={styles.main}><div className={styles.loader}></div></main>;
+  }
+  if (!user) {
+    return <main className={styles.main}>ログイン情報がありません。</main>;
   }
   if (!detail) {
     return <main className={styles.main}>詳細情報が取得できませんでした。</main>;
@@ -199,7 +202,7 @@ function SurveyDetailContent() {
 
 export default function SurveyDetailPage() {
   return (
-    <Suspense fallback={<div>読み込み中...</div>}>
+    <Suspense fallback={<div className={styles.loader}></div>}>
       <SurveyDetailContent />
     </Suspense>
   );
