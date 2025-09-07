@@ -46,8 +46,12 @@ export function useLineUser() {
           const profile = await window.liff.getProfile();
           line_id = profile.userId;
         } else {
-          // ローカル開発や未ログイン時の仮ID
-          line_id = "Ua08801bcbe21d7c2985ed58d24006472XXX";
+          // ローカル開発時のみ仮IDを付与
+          if (process.env.NODE_ENV === 'development') {
+            line_id = "Ua08801bcbe21d7c2985ed58d24006472XXX";
+          } else {
+            line_id = "";
+          }
         }
         try {
           const res = await axios.post(
