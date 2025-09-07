@@ -1,4 +1,5 @@
 // src/app/local/page.tsx
+"use client";
 import TopPage from "@/components/TopPage";
 import { useLineUser } from "@/hooks/useLineUser";
 
